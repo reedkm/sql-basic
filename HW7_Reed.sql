@@ -8,12 +8,18 @@ use sakila;
 -- 1a. Display the first and last names of all actors from the table `actor`.
 
 select first_name, last_name
-from actor;
+from actor -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-1a.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 1b. Display the first and last name of each actor in a single column in upper case letters. Name the column `Actor Name`.
 
 select upper(concat(a.first_name, ' ', a.last_name)) as 'Actor Name'
-from actor as a;
+from actor as a -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-1b.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 2a. You need to find the ID number, first name, and last name of an actor, of whom you know only the first name, "Joe." What is one query would you use to obtain this information?
 
@@ -21,32 +27,47 @@ from actor as a;
 
 select actor_id, first_name, last_name
 from actor
-where first_name = 'JOE';
+where first_name = 'JOE' -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-2a1.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- In case the actor is listed as 'JOSEPH' or some other spelling:
 
 select actor_id, first_name, last_name
 from actor
-where first_name like 'JO%';
+where first_name like 'JO%' -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-2a2.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 2b. Find all actors whose last name contain the letters `GEN`:
 
 select actor_id, first_name, last_name
 from actor
-where last_name like '%GEN%';
+where last_name like '%GEN%' -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-2b.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 2c. Find all actors whose last names contain the letters `LI`. This time, order the rows by last name and first name, in that order:
 
 select actor_id, first_name, last_name
 from actor
 where last_name like '%LI%'
-order by last_name, first_name;
+order by last_name, first_name -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-2c.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 2d. Using `IN`, display the `country_id` and `country` columns of the following countries: Afghanistan, Bangladesh, and China:
 
 select country_id, country
 from country
-where country in ('Afghanistan', 'Bangladesh', 'China');
+where country in ('Afghanistan', 'Bangladesh', 'China') -- ;
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-2d.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 3a. You want to keep a description of each actor. You don't think you will be performing queries on a description, so create a column in the table `actor` named `description` and use the data type `BLOB` (Make sure to research the type `BLOB`, as the difference between it and `VARCHAR` are significant).
 
@@ -196,20 +217,23 @@ inner join country as d on c.country_id = d.country_id;
 
 -- 7h. List the top five genres in gross revenue in descending order. (**Hint**: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
 
-select a.name, sum(e.amount)
+select a.name, sum(e.amount) as 'Top 5 Genres'
 from category as a
 inner join film_category as b on a.category_id = b.category_id
 inner join inventory as c on b.film_id = c.film_id
 inner join rental as d on c.inventory_id = d.inventory_id
 inner join payment as e on d.rental_id = e.rental_id
 group by a.name
-order by sum(e.amount) desc limit 5;
+order by sum(e.amount) desc limit 5
+into outfile '/Users/ken_r/Documents/secureOutput/HW7-7h.csv'
+fields terminated by ','
+lines terminated by '\n';
 
 -- 8a. In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. Use the solution from the problem above to create a view. If you haven't solved 7h, you can substitute another query to create a view.
 
 create view top5genreView as
 (
-select a.name, sum(e.amount)
+select a.name, sum(e.amount) as 'Top 5 Genres'
 from category as a
 inner join film_category as b on a.category_id = b.category_id
 inner join inventory as c on b.film_id = c.film_id
@@ -226,3 +250,7 @@ select * from sakila.top5genreview;
 -- 8c. You find that you no longer need the view `top_five_genres`. Write a query to delete it.
 
 drop view sakila.top5genreview;
+
+SELECT @@GLOBAL.secure_file_priv;
+
+
